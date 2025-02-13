@@ -8,13 +8,16 @@ import html2canvas from "html2canvas";
 import { login, register } from "../../api";
 import _ from "lodash";
 import {
-  adminToken,
   ERROR_NOTIFICATION,
   SUCCESS_NOTIFICATION,
+  token,
 } from "../../helper/notification_helper";
+import { assignRole } from "../../redux/role_slice";
+import { useDispatch } from "react-redux";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [imgPath, setImgPath] = useState("");
@@ -40,7 +43,7 @@ const Auth = () => {
       const canvas = await html2canvas(qrElement);
       const qrImage = canvas.toDataURL("image/png");
 
-      const response = await fetch("http://localhost:8080/api/upload-qr", {
+      const response = await fetch("http://localhost:4040/api/upload-qr", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -100,16 +103,23 @@ const Auth = () => {
     try {
       setLoading(true);
       const result = await login(values);
+
       if (_.isEmpty(_.get(result, "data.data.data", []))) {
         return ERROR_NOTIFICATION("Invalid credentials");
       }
-      localStorage.setItem(adminToken, _.get(result, "data.data.token", ""));
+
+      localStorage.setItem(token, _.get(result, "data.data.token", ""));
       SUCCESS_NOTIFICATION(result);
-      const role = _.get(result, "data.data.data.role", []);
-      if (role === "user") {
-        navigate("/user");
+      const { email, role} = _.get(result, "data.data.data", []);
+      let preparedData = {
+        email: email,
+        role: role,
+      };
+      dispatch(assignRole(preparedData));
+      if (role === "admin") {
+        navigate("/admin");
       } else {
-        navigate(`/admin`);
+        navigate("/user");
       }
     } catch (err) {
       ERROR_NOTIFICATION(err);
@@ -119,14 +129,14 @@ const Auth = () => {
   };
 
   const checkUserLoginStatus = async () => {
-    if (localStorage.getItem(adminToken)) {
+    if (localStorage.getItem(token)) {
       navigate("/");
     }
   };
 
   useEffect(() => {
     checkUserLoginStatus();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   return (

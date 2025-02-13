@@ -29,4 +29,4 @@ export const ADD_LOCAL_STORAGE = (key, value) => {
 
 // Names
 
-export const adminToken = "admin_token";
+export const token = "token";

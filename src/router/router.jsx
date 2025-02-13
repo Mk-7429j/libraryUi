@@ -12,10 +12,6 @@ import User from "../pages/user/User";
 
 let client_router = [
   {
-    path: "/auth",
-    element: <Auth/>,
-  },
-  {
     path: "/",
     element: <Client_layout />,
     children: [
@@ -49,8 +45,12 @@ let client_router = [
       },
       {
         path: "/aboutus",
-        element: <Aboutus/>
-      }
+        element: <Aboutus />,
+      },
+      {
+        path: "/auth",
+        element: <Auth />,
+      },
     ],
   },
 ];
