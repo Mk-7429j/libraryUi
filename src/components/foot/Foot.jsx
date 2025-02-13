@@ -3,9 +3,9 @@ import React, { useCallback } from "react";
 import { Home_links, navItems } from "../../helper/data_helper";
 import { useNavigate } from "react-router-dom";
 import { Img_Helper } from "../../helper/img_helper";
-import { adminToken } from "../../helper/notification_helper";
 import { useSelector } from "react-redux";
 import _ from "lodash";
+import { token } from "../../helper/notification_helper";
 
 const Foot = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const Foot = () => {
     (res) => {
       const isAdminRestricted = res?.id === 1;
       const isUserRestricted = res?.id === 2;
-      const isAdminLoggedIn = localStorage.getItem(adminToken);
+      const isAdminLoggedIn = localStorage.getItem(token);
 
       if (!isAdminLoggedIn) {
         navigate(`/auth`);
